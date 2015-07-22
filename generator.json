@@ -1,0 +1,20 @@
+{
+	"baseName": "BiofireComp",
+	"entities": [
+		{
+			"name": "docsearch",
+			"attrs": [
+				{
+					"attrName": "myattr",
+					"attrType": "String",
+					"attrImplType": "string",
+					"minLength": "10",
+					"maxLength": "20",
+					"enumValues": [],
+					"required": true
+				}
+			]
+		}
+	],
+	"resources": []
+}
