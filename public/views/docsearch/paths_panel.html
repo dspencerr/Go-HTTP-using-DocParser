@@ -1,0 +1,52 @@
+<br />
+<div class="panel panel-default" ng-controller="PathsController">
+    <div class="panel-heading">
+        <h3 class="panel-title">DocSearch Paths</h3>
+    </div>
+    <div class="panel-body">
+        <div class="form-group">
+            <label for="sourcePath">Source Path</label>
+            <div class="row">
+                <div class="col-md-9">
+                    <input class="form-control" id="sourcePath" ng-focus="source.error=''" ng-model="source.value" placeholder="{{source.placeholder}}">
+                </div>
+                <div class="col-md-3">
+                    <div class="dropdown pull-left">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            Paths
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" style="left: inherit; right: -80px;" aria-labelledby="dropdownMenu1">
+                            <li class="dropdown-header" ng-if="list.length == 0 ">Paths you add here will be keys to access data sets from those paths.</li>
+                            <li ng-repeat="s in source.list"><a ng-click="setSourcePath(s)" >{{ s }}</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <p class="text-danger">{{ source.error }}</p>
+                </div>
+            </div>
+            <br />
+            <label for="targetPath">Target Path</label>
+            <div class="row">
+                <div class="col-md-12">
+                    <input class="form-control" id="targetPath" ng-focus="target.error=''" ng-model="target.value" placeholder="{{target.placeholder}}">
+                </div>
+                <div class="col-md-12">
+                    <p class="text-danger">{{ target.error }}</p>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-6"></div>
+                <div class="col-md-2">
+                </div>
+                <div class="col-md-4">
+                    <button type="button" class="btn btn-primary pull-left" ng-click="runSearch()">Run Search</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

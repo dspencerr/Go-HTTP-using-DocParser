@@ -2,7 +2,9 @@
 <module type="GO_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
-    <content url="file://$MODULE_DIR$" />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/public/js/tests" isTestSource="true" />
+    </content>
     <orderEntry type="jdk" jdkName="Go 1.4.2 (appengine-1.9.19) (1)" jdkType="Go SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="GOPATH &lt;ComplianceApp&gt;" level="project" />

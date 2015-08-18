@@ -1,0 +1,42 @@
+<div ng-controller="GridController">
+    <div class="row">
+        <div class="col-md-10">
+            <p class="lead">
+                Results: <span ng-if="total > 0">{{ total }} documents parsed</span>
+            </p>
+        </div>
+        <div class="col-md-2">
+            <div class="dropdown pull-left">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    Paths
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" style="left: inherit; right: -80px;" aria-labelledby="dropdownMenu1">
+                    <li class="dropdown-header" ng-if="list.length == 0 ">Paths you add here will be keys to access data sets from those paths.</li>
+                    <li ng-repeat="s in source.list"><a ng-click="getDataForSource(s)" >{{ s }}</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="btn-group" role="group" aria-label="" ng-if="total > 0">
+                <button type="button" id="back" ng-click="paginate('back')" class="btn btn-default">Back</button>
+                <button type="button" id="next" ng-click="paginate('next')" class="btn btn-default">Next</button>
+            </div>
+            <span ng-if="total > 0">Showing: {{ Start }} to {{ LENGTH < total ? Start + LENGTH : total }}</span>
+        </div>
+        <div class="col-md-4">
+            <input class="form-control" id="" ng-model="file_name" placeholder="CSV file name">
+        </div>
+        <div class="col-md-2">
+            <button type="button" class="btn btn-success" style="margin-left: 20px" ng-click="exportToCSV()">Export Data</button>
+        </div>
+        <br><br>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div ag-grid="gridOptions" class="ag-fresh my-grid"></div>
+        </div>
+    </div>
+</div>

@@ -13,7 +13,9 @@ describe('DocsearchController', function () {
         expect(scope.source.list).toBeDefined();
         expect(scope.source.error).toBeDefined();
         expect(scope.source.reset).toBeDefined();
-
-    }))
-
+    }));
+    
+    it('should make a call to open a file', function () {
+        
+    })
 });

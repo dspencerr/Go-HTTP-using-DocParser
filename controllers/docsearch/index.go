@@ -7,8 +7,13 @@ import (
     "os/user"
     "encoding/json"
     "strconv"
-    //"fmt"
     "github.com/dspencerr/docParser/fileMgr"
+    "os"
+    "github.com/dspencerr/ComplianceApp/batch"
+    //"github.com/dspencerr/docParser/fileWriter"
+    "strings"
+    "io/ioutil"
+    "github.com/skratchdot/open-golang/open"
 )
 
 var bucket = "docsearch"
@@ -48,12 +53,15 @@ func GetSettings() string {
 func RunSearch(params martini.Params) string {
     initDB()
 
-    updatePaths("sources", params["source"])
-    updatePaths("targets", params["target"])
+    if !updatePaths("sources", params["source"]) {
+        return `{"result":"fail", "error":"Source directory not valid directory", "path":"source"}`
+    }
+    if !updatePaths("targets", params["target"]) {
+        return `{"result":"fail", "error":"Target directory not valid directory", "path":"target"}`
+    }
     parsedDocs, numParsed := docParser.ParseDocs(params["source"], params["target"])
 
     data, _ := json.Marshal(parsedDocs)
-
 
     s := db.Get(bucket, params["source"])
     if s.Error == nil {
@@ -62,17 +70,16 @@ func RunSearch(params martini.Params) string {
     db.Create(bucket, params["source"], data)
 
     return `{"result":"success", "docs":"`+strconv.Itoa(numParsed)+`"}`
-
-    //s := db.Get(bucket, params["source"])
-    //return string(s.Data)
 }
 
 func GetDataSet(params martini.Params) string {
     initDB()
-    s := db.Get(bucket, "sources")
-    var sources []string
-    json.Unmarshal(s.Data, &sources)
-    d := db.Get(bucket, string(sources[0]))
+
+    if info, err := os.Stat(params["path"]); err != nil || !info.IsDir() {
+        return `{"result":"fail", "error":"Source directory not valid directory", "path":"source"}`
+    }
+
+    d := db.Get(bucket, string(params["path"]))
 
     var data []fileMgr.DocFile
     json.Unmarshal(d.Data, &data)
@@ -86,16 +93,21 @@ func GetDataSet(params martini.Params) string {
     if start >= end {
         start = end - 1
     }
-    result := data[ start:end ]
+    if len(data) == 0 {
+        return `{"result":"empty"}`
+    }
 
+    result := data[ start:end ]
     res, _ := json.Marshal(result)
 
-    return string(res)
-
+    return `{"data":`+string(res)+`, "total":"`+strconv.Itoa(len(data))+`"}`
     //return `[{"result":"success"}]`
 }
 
-func updatePaths(pathType string, path string){
+func updatePaths(pathType string, path string) bool {
+    if info, err := os.Stat(path); err != nil || !info.IsDir() {
+        return false
+    }
     r := db.Get(bucket, pathType)
     var paths []string
     if r.Error != nil {
@@ -111,6 +123,7 @@ func updatePaths(pathType string, path string){
         data, _ := json.Marshal(paths)
         db.Create(bucket, pathType, data)
     }
+    return true
 }
 
 
@@ -124,74 +137,88 @@ func stringInSlice(a string, list []string) bool {
 }
 
 
+func UpdateRevision(doc fileMgr.DocFile) string {
+    initDB()
+
+    d := db.Get(bucket, string(doc.Key))
 
 
+    var docsFromBucket []fileMgr.DocFile
+    json.Unmarshal(d.Data, &docsFromBucket)
+    for indx, _ := range docsFromBucket {
+        if docsFromBucket[indx].Path == doc.Path {
+            //fmt.Println("WE IN: ", doc.Path)
+            docsFromBucket[indx].Revision = doc.Revision
+        }
+    }
+
+    data, _ := json.Marshal(docsFromBucket)
+    db.Delete(bucket, string(doc.Key))
+    db.Create(bucket, string(doc.Key), data)
+
+    return `{"status":"success"}`
+}
+
+func UpdateRevisionBatch(obj batch.DocArray) string {
+    initDB()
+
+    dbBlog := db.Get(bucket, string(obj.Key))
+    var docsFromBucket []fileMgr.DocFile
+    json.Unmarshal(dbBlog.Data, &docsFromBucket)
+    for dbIndx, _ := range docsFromBucket {
+        for prIndx, _ := range obj.Data{
+
+            if docsFromBucket[dbIndx].Path == obj.Data[prIndx].Path {
+                //fmt.Println("WE IN: ", doc.Path)
+                docsFromBucket[dbIndx].Revision = obj.Data[prIndx].Revision
+            }
+
+        }
+    }
+
+    data, _ := json.Marshal(docsFromBucket)
+    db.Delete(bucket, string(obj.Key))
+    db.Create(bucket, string(obj.Key), data)
+
+    return `{"status":"success"}`
+}
 
 
+func ExportToCSV(obj batch.CsvExport) string {
+
+    initDB()
+
+    dbBlog := db.Get(bucket, string(obj.Source))
+    var docsFromBucket []fileMgr.DocFile
+    json.Unmarshal(dbBlog.Data, &docsFromBucket)
+
+    writeDataToCSV(docsFromBucket, obj)
+
+    return `{"status":"success"}`
+}
 
 
+func writeDataToCSV(docs []fileMgr.DocFile, obj batch.CsvExport){
+    var dataToWrite string
+    for x, doc := range docs{
+        if x == 0{
+            dataToWrite += "Name    Type    Revision"+"\n"
+        }
+        name := strings.TrimSuffix(doc.Name, ".zip")
+        revision := strings.Replace(doc.Revision, "\n", " ", -1)
+        dataToWrite += name+"\t"+doc.Type+"\t"+revision+"\n"
+    }
+
+    byteData := []byte(dataToWrite)
+    //fmt.Println(byteData)
+
+    file := obj.Target + "/" + obj.Name + ".txt"
+    //fmt.Println(file)
+
+    ioutil.WriteFile(file, byteData, 0777)
+}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//func Init(params martini.Params) string {
-//
-//    bucket = []byte("docsearch")
-//
-//    source_path := params["source"]
-//    target_path := params["target"]
-//
-//    data := updatePaths(source_path, target_path)
-//
-//    return data
-////    data := docParser.ParseDocs(source_path, target_path)
-////
-////    jsonData, _ := json.Marshal(data)
-////    return string(jsonData);
-//
-//
-//    //return `[{"restul":"finished"}]`
-//}
-//
-//func updatePaths(source string, target string) string{
-//
-//    //srcKey :=
-//
-//    //var sources []string
-//    //sources = []string{source}
-//    //data, _ := json.Marshal(sources)
-//
-//    boltDb.Update([]byte("tt"), []byte(source), bucket)
-//
-//    d := boltDb.Find([]byte("tt"), bucket)
-//
-//    fmt.Println("Length: ", len(d))
-//
-//    fmt.Println(string(d))
-//
-////    var n []string
-////    fmt.Println("Let's marshal it")
-////    json.Unmarshal(d, n)
-////    fmt.Println("We unmarshalled it")
-////    fmt.Printf("%sn", n)
-//
-////    if len(val) == 0 {
-////    } else {
-////    }
-//
-//    return `[{"restul":"finished"}]`
-//}
+func OpenFileInApp(obj batch.FileOpen){
+    open.Run(obj.File)
+}

@@ -1,80 +1,24 @@
 <div class="container-fluid">
     <div class="row">
+        <div class="col-md-6" ng-include="'views/docsearch/instructions.html'"></div>
+        <div class="col-md-5" ng-include="'views/docsearch/paths_panel.html'"></div>
+    </div>
+    <hr style="border-color: #AAA">
+    <div class="row" ng-include="'views/docsearch/grid_panel.html'"></div>
+    <hr style="border-color: #AAA">
+    <div class="row">
         <div class="col-md-6">
-            <h1>Document Revision Search</h1>
-            <p class="lead">
-                DocSearch searches all docx and xlsx files within a provided source path for its revision information.
-            </p>
-
-            <p>
-                To use DocSearch, simply provide a target path and source path and click the "Run Search" button. The source path is where your docs currently are. DocSearch is non-destructive and you do not need to worry about documents in your source path being altered. All data will be output to your target path.
-            </p>
-        </div>
-        <div class="col-md-5">
-            <br />
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">DocSearch Paths</h3>
-                </div>
-                <div class="panel-body">
-                    <div class="form-group">
-                        <label for="sourcePath">Source Path</label>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <input class="form-control" id="sourcePath" ng-focus="source.error=''" ng-model="source.value" placeholder="{{source.placeholder}}">
-                            </div>
-                            <div class="col-md-12">
-                                <p class="text-danger">{{ source.error }}</p>
-                            </div>
-                        </div>
-                        <br />
-                        <label for="targetPath">Target Path</label>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <input class="form-control" id="targetPath" ng-focus="target.error=''" ng-model="target.value" placeholder="{{target.placeholder}}">
-                            </div>
-                            <div class="col-md-12">
-                                <p class="text-danger">{{ target.error }}</p>
-                            </div>
-                        </div>
-                        <br />
-                        <div class="row">
-                            <div class="col-md-12">
-                                <button type="button" class="btn btn-primary pull-right" ng-click="runSearch()">Run Search</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <hr style="border-color: #AAA">
-    <div class="row">
-        <div class="col-md-12">
-            <p class="lead">
-                Results:
-            </p>
-        </div>
-        <div class="col-md-12">
-            <div class="btn-group" role="group" aria-label="">
-                <button type="button" id="back" ng-click="paginate('back')" class="btn btn-default">Back</button>
-                <button type="button" id="next" ng-click="paginate('next')" class="btn btn-default">Next</button>
-            </div>
-        </div>
-        <br>
-        <div class="col-md-12">
-            <div ag-grid="gridOptions" class="ag-fresh my-grid"></div>
-        </div>
-    </div>
-    <hr style="border-color: #AAA">
-    <div class="row">
-        <div class="col-md-12">
             <p class="lead">
                 Inidividual File Data:
             </p>
         </div>
+        <div class="col-md-6">
+            <button type="button" ng-click="openSelectedFile()" class="btn btn-primary pull-right">Open File</button>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-md-12">
-            <textarea style="width: 100%; height: 250px" ></textarea>
+            <textarea style="width: 100%; height: 250px" ng-model="target.rawData" ></textarea>
         </div>
     </div>
     <br><br><br>

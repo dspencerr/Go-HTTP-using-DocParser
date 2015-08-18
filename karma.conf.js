@@ -17,6 +17,7 @@ module.exports = function(config) {
         'lib/angular-route/angular-route.js',
         'lib/angular-ui-date/src/date.js',
         'lib/angular-mocks/angular-mocks.js',
+        'lib/ag-grid/dist/angular-grid.js',
         'js/app.js',
         'js/**/*.js',
         'js/tests/**/*.spec.js'

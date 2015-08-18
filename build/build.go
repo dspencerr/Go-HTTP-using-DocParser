@@ -20,6 +20,9 @@ func main() {
         "assets/css/app.css",
 
         "assets/js/docsearch/docsearch-controller.js",
+        "assets/js/docsearch/datamulch-service.js",
+        "assets/js/docsearch/grid-controller.js",
+        "assets/js/docsearch/paths-controller.js",
         "assets/js/home/home-controller.js",
         "assets/js/app.js",
 
@@ -41,6 +44,9 @@ func main() {
 
         "assets/views/home/home.html",
         "assets/views/docsearch/docsearch.html",
+        "assets/views/docsearch/grid_panel.html",
+        "assets/views/docsearch/instructions.html",
+        "assets/views/docsearch/paths_panel.html",
 
     ).Output()
 
